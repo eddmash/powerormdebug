@@ -5,6 +5,7 @@ namespace Eddmash\PowerOrmDebug;
 use DebugBar\JavascriptRenderer;
 use DebugBar\StandardDebugBar;
 use Eddmash\PowerOrm\BaseOrm;
+use function Symfony\Component\VarDumper\Dumper\esc;
 
 /**
  * This file is part of the powercomponents package.
@@ -41,7 +42,7 @@ class Debugger
      */
     public function setupToolbar()
     {
-        $debugbar = new StandardDebugBar();
+        $debugbar = new StdDebugbar();
         $debugbarRenderer = $debugbar->getJavascriptRenderer($this->staticBaseUrl);
         $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
         $connection = \Eddmash\PowerOrm\BaseOrm::getDbConnection();
@@ -54,11 +55,11 @@ class Debugger
     }
 
     /**
-     * @return JavascriptRenderer
+     * @return JsRenderer
      */
     private function getDebugbarRenderer()
     {
-        if(!self::$debugbarRenderer):
+        if (!self::$debugbarRenderer):
             $this->setupToolbar();
         endif;
         return self::$debugbarRenderer;
@@ -89,8 +90,11 @@ class Debugger
      */
     public function show()
     {
-        $this->getDebugbarRenderer()->renderHead();
-        $this->getDebugbarRenderer()->render();
+        echo $this->getDebugbarRenderer()->renderHead();
+        echo $this->getDebugbarRenderer()->render();
+
     }
 
+
 }
+
