@@ -6,8 +6,8 @@
     "php",
     "debug"
   ],
-  "description": "powerormfake generates dummy data when using PowerOrm. An extension of Faker library",
-  "homepage": "https://github.com/eddmash/powerormfaker",
+  "description": "A debugger for powerorm",
+  "homepage": "https://github.com/eddmash/powerormdebug",
   "license": "MIT",
   "authors": [
     {
