@@ -2,6 +2,7 @@
 
 namespace Eddmash\PowerOrmDebug;
 
+use DebugBar\DebugBar;
 use DebugBar\JavascriptRenderer;
 use DebugBar\StandardDebugBar;
 use Eddmash\PowerOrm\BaseOrm;
@@ -18,6 +19,12 @@ use function Symfony\Component\VarDumper\Dumper\esc;
 class Debugger
 {
     public static $debugbarRenderer;
+
+    /**
+     * @var DebugBar
+     */
+    public $debugBar;
+
     private $staticBaseUrl;
     /**
      * @var BaseOrm
@@ -42,16 +49,22 @@ class Debugger
      */
     public function setupToolbar()
     {
-        $debugbar = new StdDebugbar();
-        $debugbarRenderer = $debugbar->getJavascriptRenderer($this->staticBaseUrl);
-        $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
-        $connection = \Eddmash\PowerOrm\BaseOrm::getDbConnection();
+        if (!self::$debugbarRenderer):
 
-        $connection->getConfiguration()->setSQLLogger($debugStack);
+            if (is_null($this->debugBar)):
+                // use the default one
+                $this->debugBar = new StdDebugbar();
+            endif;
 
-        $debugbar->addCollector(new \DebugBar\Bridge\DoctrineCollector($debugStack));
+            $debugbarRenderer = $this->debugBar->getJavascriptRenderer($this->staticBaseUrl);
+            $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
 
-        self::$debugbarRenderer = $debugbarRenderer;
+            $this->orm->getDatabaseConnection()->getConfiguration()->setSQLLogger($debugStack);
+
+            $this->debugBar->addCollector(new \DebugBar\Bridge\DoctrineCollector($debugStack));
+
+            self::$debugbarRenderer = $debugbarRenderer;
+        endif;
     }
 
     /**
@@ -83,16 +96,33 @@ class Debugger
 
     /**
      * Outputs the assets needed to display the debug toolbar.
-     * @return string
      * @since 1.1.0
      *
      * @author Eddilbert Macharia (http://eddmash.com) <edd.cowan@gmail.com>
      */
     public function show()
     {
+        $this->setupToolbar();
         echo $this->getDebugbarRenderer()->renderHead();
         echo $this->getDebugbarRenderer()->render();
 
+    }
+
+    /**
+     * @return DebugBar
+     */
+    public function getDebugBar()
+    {
+        $this->setupToolbar();
+        return $this->debugBar;
+    }
+
+    /**
+     * @param DebugBar $debugBar
+     */
+    public function setDebugBar(DebugBar $debugBar)
+    {
+        $this->debugBar = $debugBar;
     }
 
 
