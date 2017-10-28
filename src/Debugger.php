@@ -55,8 +55,11 @@ class Debugger
                 // use the default one
                 $this->debugBar = new StdDebugbar();
             endif;
-
-            $debugbarRenderer = $this->debugBar->getJavascriptRenderer($this->staticBaseUrl);
+            if ($this->staticBaseUrl):
+                $debugbarRenderer = $this->debugBar->getJavascriptRenderer($this->staticBaseUrl);
+            else:
+                $debugbarRenderer = $this->debugBar->getJavascriptRenderer();
+            endif;
             $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
 
             $this->orm->getDatabaseConnection()->getConfiguration()->setSQLLogger($debugStack);
