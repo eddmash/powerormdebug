@@ -6,6 +6,7 @@ use DebugBar\DebugBar;
 use DebugBar\JavascriptRenderer;
 use DebugBar\StandardDebugBar;
 use Eddmash\PowerOrm\BaseOrm;
+use Eddmash\PowerOrm\Components\ComponentInterface;
 use function Symfony\Component\VarDumper\Dumper\esc;
 
 /**
@@ -46,6 +47,8 @@ class Debugger
      * @since 1.1.0
      *
      * @author Eddilbert Macharia (http://eddmash.com) <edd.cowan@gmail.com>
+     * @throws \DebugBar\DebugBarException
+     * @throws \Eddmash\PowerOrm\Exception\OrmException
      */
     public function setupToolbar()
     {
@@ -127,7 +130,6 @@ class Debugger
     {
         $this->debugBar = $debugBar;
     }
-
 
 }
 
