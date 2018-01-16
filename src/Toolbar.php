@@ -20,6 +20,7 @@ class Toolbar extends Component
     public $instance;
 
     public function ready(BaseOrm $baseOrm)
+
     {
         $this->instance = new Debugger($baseOrm);
         // if debugger css and js are not loading correctly you
