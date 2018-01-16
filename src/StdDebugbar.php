@@ -11,12 +11,10 @@
 
 namespace Eddmash\PowerOrmDebug;
 
-
 use DebugBar\StandardDebugBar;
 
 class StdDebugbar extends StandardDebugBar
 {
-
     public function getJavascriptRenderer($baseUrl = null, $basePath = null)
     {
         return new JsRenderer($this, $baseUrl, $basePath);

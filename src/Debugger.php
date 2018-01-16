@@ -6,6 +6,7 @@ use DebugBar\DebugBar;
 use DebugBar\JavascriptRenderer;
 use DebugBar\StandardDebugBar;
 use Eddmash\PowerOrm\BaseOrm;
+use Eddmash\PowerOrm\Components\ComponentInterface;
 use function Symfony\Component\VarDumper\Dumper\esc;
 
 /**
@@ -46,6 +47,8 @@ class Debugger
      * @since 1.1.0
      *
      * @author Eddilbert Macharia (http://eddmash.com) <edd.cowan@gmail.com>
+     * @throws \DebugBar\DebugBarException
+     * @throws \Eddmash\PowerOrm\Exception\OrmException
      */
     public function setupToolbar()
     {
@@ -54,19 +57,18 @@ class Debugger
             if (is_null($this->debugBar)):
                 // use the default one
                 $this->debugBar = new StdDebugbar();
-            endif;
-            if ($this->staticBaseUrl):
-                $debugbarRenderer = $this->debugBar->getJavascriptRenderer($this->staticBaseUrl);
-            else:
+        endif;
+        if ($this->staticBaseUrl):
+                $debugbarRenderer = $this->debugBar->getJavascriptRenderer($this->staticBaseUrl); else:
                 $debugbarRenderer = $this->debugBar->getJavascriptRenderer();
-            endif;
-            $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
+        endif;
+        $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
 
-            $this->orm->getDatabaseConnection()->getConfiguration()->setSQLLogger($debugStack);
+        $this->orm->getDatabaseConnection()->getConfiguration()->setSQLLogger($debugStack);
 
-            $this->debugBar->addCollector(new \DebugBar\Bridge\DoctrineCollector($debugStack));
+        $this->debugBar->addCollector(new \DebugBar\Bridge\DoctrineCollector($debugStack));
 
-            self::$debugbarRenderer = $debugbarRenderer;
+        self::$debugbarRenderer = $debugbarRenderer;
         endif;
     }
 
@@ -108,7 +110,6 @@ class Debugger
         $this->setupToolbar();
         echo $this->getDebugbarRenderer()->renderHead();
         echo $this->getDebugbarRenderer()->render();
-
     }
 
     /**
@@ -127,7 +128,4 @@ class Debugger
     {
         $this->debugBar = $debugBar;
     }
-
-
 }
-

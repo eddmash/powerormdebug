@@ -11,7 +11,6 @@
 
 namespace Eddmash\PowerOrmDebug;
 
-
 use DebugBar\JavascriptRenderer;
 
 class JsRenderer extends JavascriptRenderer
