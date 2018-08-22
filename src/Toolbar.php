@@ -23,9 +23,7 @@ class Toolbar extends Component
 
     {
         $this->instance = new Debugger($baseOrm);
-        // if debugger css and js are not loading correctly you
-        // can set where the debuger shouw fetch them here
-        //$debugger->setStaticBaseUrl("/assets/");
+
         $this->instance->setDebugBar(new StandardDebugBar());
     }
 
