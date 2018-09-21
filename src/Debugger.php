@@ -2,12 +2,10 @@
 
 namespace Eddmash\PowerOrmDebug;
 
+use DebugBar\Bridge\DoctrineCollector;
 use DebugBar\DebugBar;
-use DebugBar\JavascriptRenderer;
-use DebugBar\StandardDebugBar;
+use Doctrine\DBAL\Logging\DebugStack;
 use Eddmash\PowerOrm\BaseOrm;
-use Eddmash\PowerOrm\Components\ComponentInterface;
-use function Symfony\Component\VarDumper\Dumper\esc;
 
 /**
  * This file is part of the powercomponents package.
@@ -26,6 +24,14 @@ class Debugger
      */
     public $debugBar;
 
+    /**
+     * The base path from where static files will be served from.
+     *
+     * This path appended at the begining of /vendor/maximebf/debugbar/src/DebugBar/Resources
+     * where the php-debugger resourses are located.
+     *
+     * @var string
+     */
     private $staticBaseUrl;
     /**
      * @var BaseOrm
@@ -38,6 +44,12 @@ class Debugger
     public function __construct(BaseOrm $orm)
     {
         $this->orm = $orm;
+
+        $this->debugBar = new StdDebugbar();
+
+        $debugStack = new DebugStack();
+        $this->orm->getDatabaseConnection()->getConfiguration()->setSQLLogger($debugStack);
+        $this->debugBar->addCollector(new DoctrineCollector($debugStack));
     }
 
 
@@ -52,26 +64,21 @@ class Debugger
      */
     public function setupToolbar()
     {
-        if (!self::$debugbarRenderer):
 
-            if (is_null($this->debugBar)):
-                // use the default one
-                $this->debugBar = new StdDebugbar();
-            endif;
-            if ($this->staticBaseUrl):
-                $debugbarRenderer = $this->debugBar->getJavascriptRenderer($this->staticBaseUrl);
-            else:
-                $debugbarRenderer = $this->debugBar->getJavascriptRenderer();
-            endif;
-            $debugStack = new \Doctrine\DBAL\Logging\DebugStack();
 
-            $this->orm->getDatabaseConnection()->getConfiguration()->setSQLLogger($debugStack);
-
-            dump($debugStack);
-            $this->debugBar->addCollector(new \DebugBar\Bridge\DoctrineCollector($debugStack));
-
-            self::$debugbarRenderer = $debugbarRenderer;
+        if ($this->staticBaseUrl):
+            $staticUrl = sprintf('%s%s%s',
+                $this->staticBaseUrl, DIRECTORY_SEPARATOR,
+                '/vendor/maximebf/debugbar/src/DebugBar/Resources'
+            );
+            $debugbarRenderer = $this->debugBar->getJavascriptRenderer($staticUrl);
+        else:
+            $debugbarRenderer = $this->debugBar->getJavascriptRenderer();
         endif;
+
+
+        self::$debugbarRenderer = $debugbarRenderer;
+
     }
 
     /**
@@ -110,7 +117,10 @@ class Debugger
     public function show()
     {
         $this->setupToolbar();
+
         echo $this->getDebugbarRenderer()->renderHead();
+
+
         echo $this->getDebugbarRenderer()->render();
     }
 
@@ -123,11 +133,4 @@ class Debugger
         return $this->debugBar;
     }
 
-    /**
-     * @param DebugBar $debugBar
-     */
-    public function setDebugBar(DebugBar $debugBar)
-    {
-        $this->debugBar = $debugBar;
-    }
 }

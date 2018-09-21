@@ -24,7 +24,7 @@ class Toolbar extends Component
     {
         $this->instance = new Debugger($baseOrm);
 
-        $this->instance->setDebugBar(new StandardDebugBar());
+//        $this->instance->setDebugBar(new StandardDebugBar());
     }
 
     /**
