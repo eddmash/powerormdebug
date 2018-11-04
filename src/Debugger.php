@@ -33,14 +33,16 @@ class Debugger
      * @var string
      */
     private $staticBaseUrl;
+
     /**
      * @var BaseOrm
      */
     private $orm;
 
-    /**
-     * @inheritDoc
-     */
+    private $assetsDir;
+
+    private $assetsName = 'debugger';
+
     public function __construct(BaseOrm $orm)
     {
         $this->orm = $orm;
@@ -52,33 +54,29 @@ class Debugger
         $this->debugBar->addCollector(new DoctrineCollector($debugStack));
     }
 
-
     /**
-     * @return \DebugBar\JavascriptRenderer
-     *
      * @since 1.1.0
      *
      * @author Eddilbert Macharia (http://eddmash.com) <edd.cowan@gmail.com>
-     * @throws \DebugBar\DebugBarException
-     * @throws \Eddmash\PowerOrm\Exception\OrmException
      */
     public function setupToolbar()
     {
+//        if ($this->staticBaseUrl):
+//            $staticUrl = sprintf('%s%s%s',
+//                $this->staticBaseUrl, DIRECTORY_SEPARATOR,
+//                '/vendor/maximebf/debugbar/src/DebugBar/Resources'
+//            );
+//            $debugbarRenderer = $this->debugBar->getJavascriptRenderer($staticUrl);
+//        else:
+        $debugbarRenderer = $this->debugBar->getJavascriptRenderer();
+//        endif;
 
-
-        if ($this->staticBaseUrl):
-            $staticUrl = sprintf('%s%s%s',
-                $this->staticBaseUrl, DIRECTORY_SEPARATOR,
-                '/vendor/maximebf/debugbar/src/DebugBar/Resources'
-            );
-            $debugbarRenderer = $this->debugBar->getJavascriptRenderer($staticUrl);
-        else:
-            $debugbarRenderer = $this->debugBar->getJavascriptRenderer();
-        endif;
-
+        $debugbarRenderer->dumpCssAssets(sprintf('%s/%s.css', $this->assetsDir,
+            $this->assetsName));
+        $debugbarRenderer->dumpJsAssets(sprintf('%s/%s.js', $this->assetsDir,
+            $this->assetsName));
 
         self::$debugbarRenderer = $debugbarRenderer;
-
     }
 
     /**
@@ -86,9 +84,9 @@ class Debugger
      */
     private function getDebugbarRenderer()
     {
-        if (!self::$debugbarRenderer):
+        if (!self::$debugbarRenderer) {
             $this->setupToolbar();
-        endif;
+        }
         return self::$debugbarRenderer;
     }
 
@@ -110,6 +108,7 @@ class Debugger
 
     /**
      * Outputs the assets needed to display the debug toolbar.
+     *
      * @since 1.1.0
      *
      * @author Eddilbert Macharia (http://eddmash.com) <edd.cowan@gmail.com>
@@ -117,9 +116,6 @@ class Debugger
     public function show()
     {
         $this->setupToolbar();
-
-        echo $this->getDebugbarRenderer()->renderHead();
-
 
         echo $this->getDebugbarRenderer()->render();
     }
@@ -133,4 +129,20 @@ class Debugger
         return $this->debugBar;
     }
 
+    public function setAssetsDirectory($assetsDir)
+    {
+        $this->assetsDir = $assetsDir;
+    }
+
+    public function renderAssets($baseurl = '/')
+    {
+        $baseurl = rtrim($baseurl, '/');
+        $file = sprintf('%s/%s/%s', $baseurl, $this->assetsDir,
+            $this->assetsName);
+        $html = '';
+        $html .= sprintf('<link rel="stylesheet" type="text/css" href="%s.css">'."\n", $file);
+        $html .= sprintf('<script type="text/javascript" src="%s.js"></script>'."\n", $file);
+
+        return $html;
+    }
 }

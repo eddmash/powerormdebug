@@ -20,7 +20,6 @@ class Toolbar extends Component
     public $instance;
 
     public function ready(BaseOrm $baseOrm)
-
     {
         $this->instance = new Debugger($baseOrm);
 
@@ -31,6 +30,7 @@ class Toolbar extends Component
      * True if it this component is accessible as an attribute of the orm.
      *
      * @return bool
+     *
      * @since 1.1.0
      *
      * @author Eddilbert Macharia (http://eddmash.com) <edd.cowan@gmail.com>
@@ -42,7 +42,9 @@ class Toolbar extends Component
 
     /**
      * Instance to to return if the component is queryable.
+     *
      * @return mixed
+     *
      * @since 1.1.0
      *
      * @author Eddilbert Macharia (http://eddmash.com) <edd.cowan@gmail.com>
@@ -53,14 +55,16 @@ class Toolbar extends Component
     }
 
     /**
-     * Name to use when querying this component
+     * Name to use when querying this component.
+     *
      * @return mixed
+     *
      * @since 1.1.0
      *
      * @author Eddilbert Macharia (http://eddmash.com) <edd.cowan@gmail.com>
      */
     public function getName()
     {
-        return "debugger";
+        return 'debugger';
     }
 }
